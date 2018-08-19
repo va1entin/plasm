@@ -1,3 +1,4 @@
+from nacl import encoding
 import pytest
 import os
 
@@ -40,3 +41,7 @@ def inputFile(sampleDir, sampleFile):
 def inputDir(sampleDir):
     inputDir = os.path.join(os.getcwd(), sampleDir)
     return inputDir
+
+@pytest.fixture
+def usedEncoder():
+    return encoding.RawEncoder

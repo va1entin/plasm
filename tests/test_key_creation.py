@@ -17,13 +17,23 @@
 from plasm import genKeys
 from plasm import encrypt
 from plasm import decrypt
+
+from nacl import public
 import os
 
-def test_key_length(tmpdir, privateKeyName, publicKeyName, password, inputFile):
+def test_key_creation(tmpdir, privateKeyName, publicKeyName, password, inputFile, usedEncoder):
     privateKeyLocation = str(tmpdir.join(privateKeyName))
     publicKeyLocation = str(tmpdir.join(publicKeyName))
 
     genKeys.generateKeyPair(privateKeyLocation, publicKeyLocation, password)
 
-    assert os.path.isfile(privateKeyLocation)
-    assert os.path.isfile(publicKeyLocation)
+    loadedPublicKey = encrypt.readPublicKey(publicKeyLocation)
+    loadedPrivateKey = decrypt.decryptKey(privateKeyLocation, password)
+
+    assert isinstance(loadedPublicKey, public.PublicKey)
+
+    assert isinstance(loadedPrivateKey, public.PrivateKey)
+    assert isinstance(loadedPrivateKey.public_key, public.PublicKey)
+
+    assert len(loadedPublicKey.encode(usedEncoder)) == 32
+    assert len(loadedPrivateKey.encode(usedEncoder)) == 32
