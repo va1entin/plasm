@@ -15,36 +15,42 @@ Non-interactive
 ~~~~~~~~~~~~~~~
 
 Generating keys:
+^^^^^^^^^^^^^^^^
 
 .. code:: python
 
-    import plasm
+    from plasm import genKeys
 
-    plasm.genKeys.generateKeyPair()
+    genKeys.generateKeyPair(privateKeyLocation, publicKeyLocation, password)
 
-Encrypting a file:
+Encrypting a file
+^^^^^^^^^^^^^^^^^
+
+-  removeInputFile is optional and False by default.
 
 .. code:: python
 
-    import plasm
+    from plasm import encrypt
 
-    plasm.encrypt.encrypt(myFile)
+    encrypt.encrypt(myFile, publicKeyLocation, removeInputFile=True)
 
 Decrypting a file:
+^^^^^^^^^^^^^^^^^^
 
 .. code:: python
 
-    import plasm
+    from plasm import decrypt
 
-    plasm.decrypt.decrypt(myFile)
+    decrypt.decryptFile(encryptedFile, privateKeyLocation, password)
 
 Decrypting all files ending with “.crypt” in a directory:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code:: python
 
-    import plasm
+    from plasm import decrypt
 
-    plasm.decrypt.decryptFilesInDir(tempDir, privateKeyLocation, password)
+    decrypt.decryptFilesInDir(dir, privateKeyLocation, password)
 
 Interactive
 ~~~~~~~~~~~
