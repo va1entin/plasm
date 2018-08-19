@@ -15,6 +15,7 @@ genKeys.generateKeyPair(privateKeyLocation, publicKeyLocation, password)
 
 #### Encrypting a file
 * removeInputFile is optional and False by default.
+
 ```python
 from plasm import encrypt
 
