@@ -14,7 +14,7 @@ def publicKeyName():
 
 @pytest.fixture
 def password():
-    password = 'test-password123'
+    password = b'test-password123'
     return password
 
 @pytest.fixture

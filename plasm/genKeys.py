@@ -43,7 +43,7 @@ def writePrivateKey(outfile, salt, encryptedKey, memlimit):
     with open(outfile, 'wb') as out_file:
         out_file.write(salt)
         out_file.write(encryptedKey)
-        out_file.write(str(memlimit))
+        out_file.write(str(memlimit).encode())
 
 def writePublicKey(outfile, publicKey):
     with open(outfile, 'wb') as out_file:

@@ -31,15 +31,14 @@ ops = pwhash.argon2i.OPSLIMIT_SENSITIVE
 #logging.basicConfig(filename='/var/log/plasm.log',level=logging.INFO)
 
 def decryptKey(privateKey, password):
-    with open (privateKey, 'r') as in_file:
+    with open(privateKey, 'rb') as in_file:
         salt = in_file.read(16)
         in_file.seek(16)
         encrypted = in_file.read(72)
         in_file.seek(88)
         mem = int(in_file.read())
 
-    key = kdf(secret.SecretBox.KEY_SIZE, password, salt,
-               opslimit=ops, memlimit=mem)
+    key = kdf(secret.SecretBox.KEY_SIZE, password, salt, opslimit=ops, memlimit=mem)
     box = secret.SecretBox(key)
     loadedPrivateKey = box.decrypt(encrypted)
     loadedPrivateKey = public.PrivateKey(loadedPrivateKey, encoder=usedEncoder)
