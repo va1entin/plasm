@@ -36,3 +36,15 @@ from plasm import decrypt
 
 decrypt.decryptFilesInDir(dir, privateKeyLocation, password)
 ```
+
+## Testing
+plasm offers a test suite based on pytest.
+To run all tests, move to the root directory of plasm and run pytest:
+```
+pytest
+```
+
+If you want a coverage report, use this command:
+```
+pytest --cov=plasm/ --cov-report term-missing -s tests
+```

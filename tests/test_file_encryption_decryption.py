@@ -28,7 +28,8 @@ def test_file_encrypted_decrypted(tmpdir, privateKeyName, publicKeyName, passwor
 
     copy(inputFile, str(tmpdir))
     inputTempFile = str(tmpdir.join(sampleFile))
-    customEncryptedTempFile = str(tmpdir.join(sampleFile + '.foobar'))
+    customOutfileExtension = 'foobar'
+    customEncryptedTempFile = str(tmpdir.join(sampleFile + '.' + customOutfileExtension))
     encryptedTempFile = str(tmpdir.join(sampleFile + '.crypt'))
 
     with open(inputTempFile, 'rb') as in_file:
@@ -43,7 +44,7 @@ def test_file_encrypted_decrypted(tmpdir, privateKeyName, publicKeyName, passwor
     os.remove(encryptedTempFile)
 
 #custom outfile
-    encrypt.encrypt(inputTempFile, publicKeyLocation, outfilePath=customEncryptedTempFile)
+    encrypt.encrypt(inputTempFile, publicKeyLocation, outfileExtension=customOutfileExtension)
 
     with open(customEncryptedTempFile, 'rb') as in_file:
         customEncryptedTempFileHash = hashlib.sha256(in_file.read()).hexdigest()

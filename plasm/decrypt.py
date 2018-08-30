@@ -46,15 +46,15 @@ def decryptKey(privateKey, password):
     return loadedPrivateKey
 
 
-def decryptFilesInDir(directory, privateKeyLocation, password, fileExtension=".crypt"):
+def decryptFilesInDir(directory, privateKeyLocation, password, infileExtension=".crypt"):
     loadedPrivateKey = decryptKey(privateKeyLocation, password)
 
     for file in os.listdir(directory):
-        if file.endswith(fileExtension):
+        if file.endswith(infileExtension):
             try:
                 file = os.path.join(os.path.abspath(directory), file)
-                fileExtensionRegex = fileExtension + '$'
-                outfile = re.sub(fileExtensionRegex, '', file)
+                infileExtensionRegex = infileExtension + '$'
+                outfile = re.sub(infileExtensionRegex, '', file)
 
                 with open(file, 'rb') as in_file:
                     data = in_file.read()
@@ -68,13 +68,13 @@ def decryptFilesInDir(directory, privateKeyLocation, password, fileExtension=".c
             except:
                 logging.critical("Failed to decrypt {0}".format(file))
 
-def decryptFile(file, privateKeyLocation, password, fileExtension=".crypt"):
+def decryptFile(file, privateKeyLocation, password, infileExtension=".crypt"):
     loadedPrivateKey = decryptKey(privateKeyLocation, password)
 
-    if file.endswith(fileExtension):
+    if file.endswith(infileExtension):
         file = os.path.abspath(file)
-        fileExtensionRegex = fileExtension + '$'
-        outfile = re.sub(fileExtensionRegex, '', file)
+        infileExtensionRegex = infileExtension + '$'
+        outfile = re.sub(infileExtensionRegex, '', file)
 
         with open(file, 'rb') as in_file:
             data = in_file.read()

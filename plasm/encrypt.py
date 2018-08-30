@@ -32,9 +32,8 @@ def readPublicKey(publicKeyLocation):
             publicKey = key_file.read()
     return public.PublicKey(publicKey, encoder=usedEncoder)
 
-def readFile(infile, outfile):
-    if not outfile:
-        outfile = re.sub(r'(\.[a-zA-Z0-9]*$)', r'\1.crypt', infile)
+def readFile(infile, outfileExtension):
+    outfile = re.sub(r'(\.[a-zA-Z0-9]*$)', r'\1.{}'.format(outfileExtension), infile)
     with open(infile, 'rb') as in_file:
         data = in_file.read()
     return data, outfile
@@ -52,8 +51,8 @@ def removeFile(inputFile):
     logging.debug('Deleting source file {0}'.format(inputFile))
     os.remove(inputFile)
 
-def encrypt(inputFile, publicKeyLocation='/etc/plasm/public.key', outfilePath=False, removeInputFile=False):
-    data, outfile = readFile(inputFile, outfilePath)
+def encrypt(inputFile, publicKeyLocation='/etc/plasm/public.key', outfileExtension="crypt", removeInputFile=False):
+    data, outfile = readFile(inputFile, outfileExtension)
     publicKey = readPublicKey(publicKeyLocation)
     encrypted = sealedBox(publicKey, data)
     outfile = writeFile(outfile, encrypted)
@@ -62,7 +61,10 @@ def encrypt(inputFile, publicKeyLocation='/etc/plasm/public.key', outfilePath=Fa
         removeFile(inputFile)
     return outfile
 
-def encryptFilesInDir(directory, publicKeyLocation, removeInputFile=False):
+def encryptFilesInDir(directory, publicKeyLocation, outfileExtension="crypt", removeInputFile=False):
     for file in os.listdir(directory):
-        filePath = os.path.join(directory, file)
-        encrypt(filePath, publicKeyLocation, removeInputFile)
+        try:
+            filePath = os.path.join(directory, file)
+            encrypt(filePath, publicKeyLocation, outfileExtension=outfileExtension, removeInputFile=removeInputFile)
+        except:
+            logging.critical("Failed to encrypt {0}".format(file))
