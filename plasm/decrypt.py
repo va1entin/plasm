@@ -25,8 +25,8 @@ import getpass
 
 usedEncoder = encoding.RawEncoder
 
-kdf = pwhash.argon2i.kdf
-ops = pwhash.argon2i.OPSLIMIT_SENSITIVE
+kdf = pwhash.argon2id.kdf
+ops = pwhash.argon2id.OPSLIMIT_SENSITIVE
 
 #logging.basicConfig(filename='/var/log/plasm.log',level=logging.INFO)
 

@@ -25,9 +25,9 @@ import sys
 
 usedEncoder = encoding.RawEncoder
 
-kdf = pwhash.argon2i.kdf
-salt = utils.random(pwhash.argon2i.SALTBYTES)
-ops = pwhash.argon2i.OPSLIMIT_SENSITIVE
+kdf = pwhash.argon2id.kdf
+salt = utils.random(pwhash.argon2id.SALTBYTES)
+ops = pwhash.argon2id.OPSLIMIT_SENSITIVE
 
 #logging.basicConfig(filename='/var/log/plasm.log',level=logging.INFO)
 
@@ -63,7 +63,7 @@ def backupKeyFiles(privateKeyLocation, publicKeyLocation):
         os.rename(publicKeyLocation, backupPublicKeyLocation)
         logging.info("Existing public key {0} was backuped to {1}".format(publicKeyLocation, backupPublicKeyLocation))
 
-def generateKeyPair(privateKeyLocation, publicKeyLocation, password, memlimit=pwhash.argon2i.MEMLIMIT_SENSITIVE):
+def generateKeyPair(privateKeyLocation, publicKeyLocation, password, memlimit=pwhash.argon2id.MEMLIMIT_SENSITIVE):
     backupKeyFiles(privateKeyLocation, publicKeyLocation)
 
     privateKey = public.PrivateKey.generate()
