@@ -19,7 +19,6 @@ from nacl import encoding, public
 import argparse
 import logging
 import os
-import re
 import sys
 
 usedEncoder = encoding.RawEncoder
@@ -33,7 +32,7 @@ def readPublicKey(publicKeyLocation):
     return public.PublicKey(publicKey, encoder=usedEncoder)
 
 def readFile(infile, outfileExtension):
-    outfile = re.sub(r'(\.[a-zA-Z0-9]*$)', r'\1.{}'.format(outfileExtension), infile)
+    outfile = infile + outfileExtension
     with open(infile, 'rb') as in_file:
         data = in_file.read()
     return data, outfile
@@ -51,7 +50,7 @@ def removeFile(inputFile):
     logging.debug('Deleting source file {0}'.format(inputFile))
     os.remove(inputFile)
 
-def encrypt(inputFile, publicKeyLocation='/etc/plasm/public.key', outfileExtension="crypt", removeInputFile=False):
+def encrypt(inputFile, publicKeyLocation='/etc/plasm/public.key', outfileExtension=".crypt", removeInputFile=False):
     data, outfile = readFile(inputFile, outfileExtension)
     publicKey = readPublicKey(publicKeyLocation)
     encrypted = sealedBox(publicKey, data)
@@ -61,7 +60,7 @@ def encrypt(inputFile, publicKeyLocation='/etc/plasm/public.key', outfileExtensi
         removeFile(inputFile)
     return outfile
 
-def encryptFilesInDir(directory, publicKeyLocation, outfileExtension="crypt", removeInputFile=False):
+def encryptFilesInDir(directory, publicKeyLocation, outfileExtension=".crypt", removeInputFile=False):
     for file in os.listdir(directory):
         try:
             filePath = os.path.join(directory, file)

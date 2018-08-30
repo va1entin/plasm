@@ -28,8 +28,8 @@ def test_file_encrypted_decrypted(tmpdir, privateKeyName, publicKeyName, passwor
 
     copy(inputFile, str(tmpdir))
     inputTempFile = str(tmpdir.join(sampleFile))
-    customOutfileExtension = 'foobar'
-    customEncryptedTempFile = str(tmpdir.join(sampleFile + '.' + customOutfileExtension))
+    customOutfileExtension = '.foobar'
+    customEncryptedTempFile = str(tmpdir.join(sampleFile + customOutfileExtension))
     encryptedTempFile = str(tmpdir.join(sampleFile + '.crypt'))
 
     with open(inputTempFile, 'rb') as in_file:
