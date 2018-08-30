@@ -17,12 +17,12 @@
 from plasm import genKeys
 from plasm import encrypt
 from plasm import decrypt
+import hashlib
 import os
 
 from shutil import copytree
-from PIL import Image
 
-def test_dir_decrypted(tmpdir, privateKeyName, publicKeyName, password, sampleFile, sampleFileBW, inputDir):
+def test_dir_encrypted_decrypted(tmpdir, privateKeyName, publicKeyName, password, sampleFile, sampleFileBW, inputDir, inputFileHash, inputFileBWHash):
     privateKeyLocation = str(tmpdir.join(privateKeyName))
     publicKeyLocation = str(tmpdir.join(publicKeyName))
 
@@ -35,11 +35,19 @@ def test_dir_decrypted(tmpdir, privateKeyName, publicKeyName, password, sampleFi
     inputTempFile = os.path.join(tempDir, sampleFile)
     inputTempFileBW = os.path.join(tempDir, sampleFileBW)
 
-    encrypt.encrypt(inputTempFile, publicKeyLocation)
-    encrypt.encrypt(inputTempFileBW, publicKeyLocation)
+    with open(inputTempFile, 'rb') as in_file:
+        inputTempFileHash = hashlib.sha256(in_file.read()).hexdigest()
 
-    encryptedTempFile = str(tmpdir.join(tempDir, sampleFile, '.crypt'))
-    encryptedTempFileBW = str(tmpdir.join(tempDir, sampleFileBW, '.crypt'))
+    with open(inputTempFileBW, 'rb') as in_file:
+        inputTempFileBWHash = hashlib.sha256(in_file.read()).hexdigest()
+
+    encrypt.encryptFilesInDir(tempDir, publicKeyLocation)
+
+    encryptedTempFile = inputTempFile + '.crypt'
+    encryptedTempFileBW = inputTempFileBW + '.crypt'
+
+    assert os.path.isfile(encryptedTempFile)
+    assert os.path.isfile(encryptedTempFileBW)
 
     os.remove(inputTempFile)
     os.remove(inputTempFileBW)
@@ -48,5 +56,10 @@ def test_dir_decrypted(tmpdir, privateKeyName, publicKeyName, password, sampleFi
 
     decrypt.decryptFilesInDir(tempDir, privateKeyLocation, password)
 
-    assert Image.open(inputTempFile)
-    assert Image.open(inputTempFileBW)
+    with open(inputTempFile, 'rb') as in_file:
+        decryptedTempFileHash = hashlib.sha256(in_file.read()).hexdigest()
+    with open(inputTempFileBW, 'rb') as in_file:
+        decryptedTempFileBWHash = hashlib.sha256(in_file.read()).hexdigest()
+
+    assert decryptedTempFileHash == inputFileHash
+    assert decryptedTempFileBWHash == inputFileBWHash

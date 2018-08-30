@@ -46,14 +46,15 @@ def decryptKey(privateKey, password):
     return loadedPrivateKey
 
 
-def decryptFilesInDir(directory, privateKeyLocation, password):
+def decryptFilesInDir(directory, privateKeyLocation, password, fileExtension=".crypt"):
     loadedPrivateKey = decryptKey(privateKeyLocation, password)
 
     for file in os.listdir(directory):
-        if file.endswith(".crypt"):
+        if file.endswith(fileExtension):
             try:
                 file = os.path.join(os.path.abspath(directory), file)
-                outfile = re.sub('\.crypt$', '', file)
+                fileExtensionRegex = fileExtension + '$'
+                outfile = re.sub(fileExtensionRegex, '', file)
 
                 with open(file, 'rb') as in_file:
                     data = in_file.read()
@@ -67,12 +68,13 @@ def decryptFilesInDir(directory, privateKeyLocation, password):
             except:
                 logging.critical("Failed to decrypt {0}".format(file))
 
-def decryptFile(file, privateKeyLocation, password):
+def decryptFile(file, privateKeyLocation, password, fileExtension=".crypt"):
     loadedPrivateKey = decryptKey(privateKeyLocation, password)
 
-    if file.endswith(".crypt"):
+    if file.endswith(fileExtension):
         file = os.path.abspath(file)
-        outfile = re.sub('\.crypt$', '', file)
+        fileExtensionRegex = fileExtension + '$'
+        outfile = re.sub(fileExtensionRegex, '', file)
 
         with open(file, 'rb') as in_file:
             data = in_file.read()
@@ -84,21 +86,3 @@ def decryptFile(file, privateKeyLocation, password):
             out_file.write(decrypted)
 
         logging.info("Decrypted {0} to {1}".format(file, outfile))
-
-def getArgs():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--key", metavar="/path/to/private.key", help="Private key to use", required=True)
-    parser.add_argument("--dir", metavar="/path/to/files.crypt", help="Decrypt all files ending with .crypt in this directory")
-    parser.add_argument("--file", metavar="/path/to/file.crypt", help="Decrypt only the specified file")
-    args = parser.parse_args()
-
-    args.password = getpass.getpass()
-
-    if args.dir:
-        decryptFilesInDir(args.dir, args.key, args.password)
-
-    if args.file:
-        decryptFile(args.file, args.key, args.password)
-
-if __name__ == "__main__":
-    getArgs()

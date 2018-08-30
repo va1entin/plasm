@@ -51,7 +51,7 @@ def writePublicKey(outfile, publicKey):
 
 def backupKeyFiles(privateKeyLocation, publicKeyLocation):
     now = datetime.datetime.now()
-    now = now.strftime("_%Y-%m-%d_%H_%M_%S")
+    now = now.strftime("_%Y-%m-%d_%H-%M-%S")
     backupPrivateKeyLocation = os.path.join(privateKeyLocation + now)
     backupPublicKeyLocation = os.path.join(publicKeyLocation + now)
 
@@ -77,28 +77,3 @@ def generateKeyPair(privateKeyLocation, publicKeyLocation, password, memlimit=pw
     writePublicKey(publicKeyLocation, encodedPublicKey)
 
     logging.info('IMPORTANT: Backup the newly generated private key at {0} immediately. If you lose it, you will not be able to decrypt your files.'.format(privateKeyLocation))
-
-def getArgs():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--memlimit", type=int, metavar="int", help="Maximum amount of memory in bytes to use for key encryption, minimum 8192", default=pwhash.argon2i.MEMLIMIT_SENSITIVE)
-    parser.add_argument("--directory", metavar="/etc/plasm", help="Directory to write keys to", default=os.getcwd())
-    args = parser.parse_args()
-
-    if args.directory:
-        try:
-            if os.path.exists(args.directory):
-                logging.info("Using specified directory {0} as output directory".format(args.directory))
-        except:
-            raise Error("Specified output directory {0} does not exist".format(args.directory))
-    else:
-        logging.info("No output directory specified. Using current directory {0} as output directory.".format(args.directory))
-
-    publicKeyLocation = os.path.join(args.directory, 'public.key')
-    privateKeyLocation = os.path.join(args.directory, 'private.key')
-
-    args.password = getpass.getpass()
-
-    generateKeyPair(privateKeyLocation, publicKeyLocation, args.password, args.memlimit)
-
-if __name__ == "__main__":
-    getArgs()

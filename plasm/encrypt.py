@@ -32,10 +32,11 @@ def readPublicKey(publicKeyLocation):
             publicKey = key_file.read()
     return public.PublicKey(publicKey, encoder=usedEncoder)
 
-def readFile(infile):
+def readFile(infile, outfile):
+    if not outfile:
+        outfile = re.sub(r'(\.[a-zA-Z0-9]*$)', r'\1.crypt', infile)
     with open(infile, 'rb') as in_file:
         data = in_file.read()
-        outfile = re.sub(r'(\.[a-zA-Z0-9]*$)', r'\1.crypt', infile)
     return data, outfile
 
 def writeFile(outfile, data):
@@ -51,9 +52,8 @@ def removeFile(inputFile):
     logging.debug('Deleting source file {0}'.format(inputFile))
     os.remove(inputFile)
 
-def encrypt(inputFile, publicKeyLocation='/etc/plasm/public.key', removeInputFile=False):
-    #try:
-    data, outfile = readFile(inputFile)
+def encrypt(inputFile, publicKeyLocation='/etc/plasm/public.key', outfilePath=False, removeInputFile=False):
+    data, outfile = readFile(inputFile, outfilePath)
     publicKey = readPublicKey(publicKeyLocation)
     encrypted = sealedBox(publicKey, data)
     outfile = writeFile(outfile, encrypted)
@@ -61,24 +61,8 @@ def encrypt(inputFile, publicKeyLocation='/etc/plasm/public.key', removeInputFil
     if removeInputFile:
         removeFile(inputFile)
     return outfile
-    #except:
-    #    logging.error('Encryption of file {0} failed.'.format(inputFile))
-    #    return None
 
-def getArgs():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--key", metavar="/path/to/public.key", help="Public key to use", default='/etc/plasm/public.key', required=True)
-    parser.add_argument("--directory", metavar="/path/to/files", help="Encrypt all files in this directory")
-    parser.add_argument("--file", metavar="/path/to/file", help="Encrypt only the specified file")
-    parser.add_argument("--removeInputFile", action='store_true', help="Remove input file(s) after encryption")
-    args = parser.parse_args()
-
-    if args.key:
-        if not os.path.isfile(args.key):
-            logging.critical('Public key does not exist: {0}'.format(args.key))
-            sys.exit(1)
-
-    encrypt(args.file, args.key, args.removeInputFile)
-
-if __name__ == "__main__":
-    getArgs()
+def encryptFilesInDir(directory, publicKeyLocation, removeInputFile=False):
+    for file in os.listdir(directory):
+        filePath = os.path.join(directory, file)
+        encrypt(filePath, publicKeyLocation, removeInputFile)
