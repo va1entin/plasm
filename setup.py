@@ -17,7 +17,7 @@
 from setuptools import setup
 
 setup(name='plasm',
-      version='0.1',
+      version='20180830',
       description='PyNaCl AbStraction Module',
       url='https://gitlab.com/va1entin/plasm',
       author='va1entin',
@@ -25,7 +25,7 @@ setup(name='plasm',
       license='GPL',
       packages=['plasm'],
       install_requires=[
-          'nacl',
+          'pynacl',
       ],
       scripts=[
           'plasm/decrypt.py',
