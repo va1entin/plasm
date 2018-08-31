@@ -16,12 +16,9 @@
 
 from nacl import encoding, public, pwhash, secret, utils
 
-import argparse
 import datetime
-import getpass
 import logging
 import os
-import sys
 
 usedEncoder = encoding.RawEncoder
 

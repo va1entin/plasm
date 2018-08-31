@@ -16,10 +16,8 @@
 
 from nacl import encoding, public
 
-import argparse
 import logging
 import os
-import sys
 
 usedEncoder = encoding.RawEncoder
 

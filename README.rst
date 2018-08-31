@@ -41,6 +41,18 @@ Encrypting a file
 
     encrypt.encrypt(myFile, publicKeyLocation, removeInputFile=True)
 
+Encrypting all files in a directory:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-  outfileExtension is optional and set to “.crypt” by default
+-  removeInputFile is optional and False by default.
+
+.. code:: python
+
+    from plasm import encrypt
+
+    encrypt.encryptFilesInDir(directory, publicKeyLocation, outfileExtension=".crypt", removeInputFile=False):
+
 Decrypting a file:
 ~~~~~~~~~~~~~~~~~~
 
@@ -50,14 +62,16 @@ Decrypting a file:
 
     decrypt.decryptFile(encryptedFile, privateKeyLocation, password)
 
-Decrypting all files ending with “.crypt” in a directory:
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Decrypting all files with a certain extension in a directory:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-  infileExtension is optional and set to “.crypt” by default
 
 .. code:: python
 
     from plasm import decrypt
 
-    decrypt.decryptFilesInDir(dir, privateKeyLocation, password)
+    decrypt.decryptFilesInDir(directory, privateKeyLocation, password, infileExtension=".crypt"):
 
 Testing
 -------

@@ -14,14 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from nacl import encoding, public, pwhash, secret, utils
+from nacl import encoding, public, pwhash, secret
 
-import argparse
 import logging
 import os
 import re
-import sys
-import getpass
 
 usedEncoder = encoding.RawEncoder
 
