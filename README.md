@@ -26,6 +26,7 @@ encrypt.encrypt(myFile, publicKeyLocation, removeInputFile=True)
 ### Encrypting all files in a directory:
 * outfileExtension is optional and set to ".crypt" by default
 * removeInputFile is optional and False by default.
+
 ```python
 from plasm import encrypt
 
@@ -41,6 +42,7 @@ decrypt.decryptFile(encryptedFile, privateKeyLocation, password)
 
 ### Decrypting all files with a certain extension in a directory:
 * infileExtension is optional and set to ".crypt" by default
+
 ```python
 from plasm import decrypt
 
@@ -50,11 +52,13 @@ decrypt.decryptFilesInDir(directory, privateKeyLocation, password, infileExtensi
 ## Testing
 plasm offers a test suite based on pytest.
 To run all tests, move to the root directory of plasm and run pytest:
+
 ```
 pytest
 ```
 
 If you want a coverage report, use this command:
+
 ```
 pytest --cov=plasm/ --cov-report term-missing -s tests
 ```
