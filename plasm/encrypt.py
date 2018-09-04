@@ -1,18 +1,17 @@
 #!/usr/bin/env python
-# This file is part of Plasm.
+# Copyright 2018 Valentin Heidelberger
 #
-# Plasm is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+# http://www.apache.org/licenses/LICENSE-2.0
 #
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 from nacl import encoding, public
 
@@ -48,7 +47,7 @@ def removeFile(inputFile):
     logging.debug('Deleting source file {0}'.format(inputFile))
     os.remove(inputFile)
 
-def encrypt(inputFile, publicKeyLocation='/etc/plasm/public.key', outfileExtension=".crypt", removeInputFile=False):
+def encryptFile(inputFile, publicKeyLocation='/etc/plasm/public.key', outfileExtension=".crypt", removeInputFile=False):
     data, outfile = readFile(inputFile, outfileExtension)
     publicKey = readPublicKey(publicKeyLocation)
     encrypted = sealedBox(publicKey, data)
@@ -62,6 +61,6 @@ def encryptFilesInDir(directory, publicKeyLocation, outfileExtension=".crypt", r
     for file in os.listdir(directory):
         try:
             filePath = os.path.join(directory, file)
-            encrypt(filePath, publicKeyLocation, outfileExtension=outfileExtension, removeInputFile=removeInputFile)
+            encryptFile(filePath, publicKeyLocation, outfileExtension=outfileExtension, removeInputFile=removeInputFile)
         except:
             logging.critical("Failed to encrypt {0}".format(file))

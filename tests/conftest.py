@@ -3,6 +3,11 @@ import pytest
 import os
 
 @pytest.fixture
+def customOutfileExtension():
+    customOutfileExtension = '.foobar'
+    return customOutfileExtension
+
+@pytest.fixture
 def inputFileHash():
     inputFileHash = '5e7b96b55dcf8ffaf6d3a0f1b862d97a4d507062fa9e5945bd4ef0815cffdc7b'
     return inputFileHash

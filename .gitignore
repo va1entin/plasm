@@ -1,5 +1,6 @@
 legacy/*
 .coverage
+nix/*
 
 # Compiled python modules.
 *.pyc
