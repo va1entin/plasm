@@ -20,7 +20,7 @@ genKeys.generateKeyPair(privateKeyLocation, publicKeyLocation, password)
 ```python
 from plasm import encrypt
 
-encrypt.encrypt(myFile, publicKeyLocation, removeInputFile=True)
+encrypt.encryptFile(myFile, publicKeyLocation, removeInputFile=True)
 ```
 
 ### Encrypting all files in a directory:

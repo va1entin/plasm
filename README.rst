@@ -39,7 +39,7 @@ Encrypting a file
 
     from plasm import encrypt
 
-    encrypt.encrypt(myFile, publicKeyLocation, removeInputFile=True)
+    encrypt.encryptFile(myFile, publicKeyLocation, removeInputFile=True)
 
 Encrypting all files in a directory:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
