@@ -1,4 +1,4 @@
 26a27
 > from plasm import encrypt
 875a877
->         filename = encrypt.encrypt(filename, '/etc/plasm/public.key')
+>         filename = encrypt.encryptFile(filename, '/etc/plasm/public.key')
