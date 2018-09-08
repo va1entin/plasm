@@ -26,6 +26,7 @@ ops = pwhash.argon2id.OPSLIMIT_SENSITIVE
 
 #logging.basicConfig(filename='/var/log/plasm.log',level=logging.INFO)
 
+
 def decryptKey(privateKey, password):
     with open(privateKey, 'rb') as in_file:
         salt = in_file.read(16)
@@ -40,7 +41,6 @@ def decryptKey(privateKey, password):
     loadedPrivateKey = public.PrivateKey(loadedPrivateKey, encoder=usedEncoder)
 
     return loadedPrivateKey
-
 
 def decryptFilesInDir(directory, privateKeyLocation, password, infileExtension=".crypt"):
     loadedPrivateKey = decryptKey(privateKeyLocation, password)

@@ -27,6 +27,7 @@ ops = pwhash.argon2id.OPSLIMIT_SENSITIVE
 
 #logging.basicConfig(filename='/var/log/plasm.log',level=logging.INFO)
 
+
 def encryptKey(memlimit, key, password):
 
     derivatedPassword = kdf(secret.SecretBox.KEY_SIZE, password, salt, opslimit=ops, memlimit=memlimit)

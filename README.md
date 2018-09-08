@@ -8,10 +8,12 @@ If you are willing to dive deeper or want to customize more than what plasm allo
 ## Usage
 
 ### Generating keys:
+* memlimit is optional and specifies the amount of RAM occupied for encrypting the private key **in bytes**. It's set to 1073741824 bytes (1,07 gigabytes) by default, because that's the memlimit for sensitive data libsodium suggests.
+If you specify a memlimit exceeding the free RAM your device can offer, creating the key will fail. If your encrypting device (e.g. a Raspberry Pi with ~500 megabytes of RAM) can't offer the default, I suggest creating the keys on a device that does and transferring them to the other device instead of weakening the encryption of your private key by creating it with a lower memlimit.
 ```python
 from plasm import genKeys
 
-genKeys.generateKeyPair(privateKeyLocation, publicKeyLocation, password)
+genKeys.generateKeyPair(privateKeyLocation, publicKeyLocation, password, memlimit=1073741824)
 ```
 
 ### Encrypting a file
