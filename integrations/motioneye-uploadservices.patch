@@ -1,4 +1,18 @@
-26a27
-> from plasm import encrypt
-875a877
->         filename = encrypt.encryptFile(filename, '/etc/plasm/public.key')
+--- /usr/local/lib/python2.7/dist-packages/motioneye/uploadservices.py.bak	2020-01-04 13:22:07.659080493 +0100
++++ /usr/local/lib/python2.7/dist-packages/motioneye/uploadservices.py	2020-01-04 15:14:48.971279395 +0100
+@@ -25,6 +25,7 @@
+ import urllib
+ import urllib2
+ import pycurl
++from plasm import encrypt
+ 
+ import settings
+ import utils
+@@ -1100,6 +1101,7 @@
+         return logging.error('service "%s" not initialized for camera with id %s' % (service_name, camera_id))
+ 
+     try:
++        filename = encrypt.encryptFile(filename, '/etc/plasm/public.key')
+         service.upload_file(target_dir, filename, camera_name)
+ 
+     except Exception as e:
