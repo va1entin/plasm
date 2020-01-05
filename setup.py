@@ -16,11 +16,10 @@
 from setuptools import setup
 
 setup(name='plasm',
-      version='20180831',
+      version='20200105',
       description='PyNaCl AbStraction Module',
-      url='https://gitlab.com/va1entin/plasm',
+      url='https://github.com/va1entin/plasm',
       author='va1entin',
-      author_email='gitlab@valentinsblog.com',
       license='Apache License 2.0',
       packages=['plasm'],
       install_requires=[
