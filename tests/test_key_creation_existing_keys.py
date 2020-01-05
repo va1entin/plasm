@@ -1,20 +1,19 @@
 #!/usr/bin/env python
-# This file is part of Plasm.
+# Copyright 2018 Valentin Heidelberger
 #
-# Plasm is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+# http://www.apache.org/licenses/LICENSE-2.0
 #
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
-from plasm import genKeys
+from plasm import gen_keys
 from plasm import encrypt
 from plasm import decrypt
 
@@ -23,38 +22,38 @@ import os
 import re
 import glob
 
-def test_key_creation_existing_keys(tmpdir, privateKeyName, publicKeyName, password, inputFile, usedEncoder):
-    privateKeyLocation = str(tmpdir.join(privateKeyName))
-    publicKeyLocation = str(tmpdir.join(publicKeyName))
+def test_key_creation_existing_keys(tmpdir, private_key_name, public_key_name, password, used_encoder):
+    private_key_location = str(tmpdir.join(private_key_name))
+    public_key_location = str(tmpdir.join(public_key_name))
 
-    genKeys.generateKeyPair(privateKeyLocation, publicKeyLocation, password)
+    gen_keys.generate_key_pair(private_key_location, public_key_location, password)
 
-    genKeys.generateKeyPair(privateKeyLocation, publicKeyLocation, password)
+    gen_keys.generate_key_pair(private_key_location, public_key_location, password)
 
-    backupPrivateKeyLocation = privateKeyLocation + '_[0-9][0-9][0-9][0-9]-[0-2][0-9]-[0-3][0-9]_[0-2][0-9]-[0-5][0-9]-[0-5][0-9]'
-    backupPublicKeyLocation = publicKeyLocation + '_[0-9][0-9][0-9][0-9]-[0-2][0-9]-[0-3][0-9]_[0-2][0-9]-[0-5][0-9]-[0-5][0-9]'
-    backupPrivateKeyLocation = glob.glob(backupPrivateKeyLocation)[0]
-    backupPublicKeyLocation = glob.glob(backupPublicKeyLocation)[0]
+    backup_private_key_location = private_key_location + '_[0-9][0-9][0-9][0-9]-[0-2][0-9]-[0-3][0-9]_[0-2][0-9]-[0-5][0-9]-[0-5][0-9]'
+    backup_public_key_location = public_key_location + '_[0-9][0-9][0-9][0-9]-[0-2][0-9]-[0-3][0-9]_[0-2][0-9]-[0-5][0-9]-[0-5][0-9]'
+    backup_private_key_location = glob.glob(backup_private_key_location)[0]
+    backup_public_key_location = glob.glob(backup_public_key_location)[0]
 
-    loadedPrivateKey = decrypt.decryptKey(privateKeyLocation, password)
-    loadedPublicKey = encrypt.readPublicKey(publicKeyLocation)
+    loaded_private_key = decrypt.decrypt_key(private_key_location, password)
+    loaded_public_key = encrypt.read_public_key(public_key_location)
 
-    assert isinstance(loadedPublicKey, public.PublicKey)
+    assert isinstance(loaded_public_key, public.PublicKey)
 
-    assert isinstance(loadedPrivateKey, public.PrivateKey)
-    assert isinstance(loadedPrivateKey.public_key, public.PublicKey)
+    assert isinstance(loaded_private_key, public.PrivateKey)
+    assert isinstance(loaded_private_key.public_key, public.PublicKey)
 
-    assert len(loadedPublicKey.encode(usedEncoder)) == 32
-    assert len(loadedPrivateKey.encode(usedEncoder)) == 32
+    assert len(loaded_public_key.encode(used_encoder)) == 32
+    assert len(loaded_private_key.encode(used_encoder)) == 32
 
 
-    loadedPrivateKey = decrypt.decryptKey(backupPrivateKeyLocation, password)
-    loadedPublicKey = encrypt.readPublicKey(backupPublicKeyLocation)
+    loaded_private_key = decrypt.decrypt_key(backup_private_key_location, password)
+    loaded_public_key = encrypt.read_public_key(backup_public_key_location)
 
-    assert isinstance(loadedPublicKey, public.PublicKey)
+    assert isinstance(loaded_public_key, public.PublicKey)
 
-    assert isinstance(loadedPrivateKey, public.PrivateKey)
-    assert isinstance(loadedPrivateKey.public_key, public.PublicKey)
+    assert isinstance(loaded_private_key, public.PrivateKey)
+    assert isinstance(loaded_private_key.public_key, public.PublicKey)
 
-    assert len(loadedPublicKey.encode(usedEncoder)) == 32
-    assert len(loadedPrivateKey.encode(usedEncoder)) == 32
+    assert len(loaded_public_key.encode(used_encoder)) == 32
+    assert len(loaded_private_key.encode(used_encoder)) == 32

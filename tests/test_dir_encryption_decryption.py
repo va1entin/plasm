@@ -1,20 +1,19 @@
 #!/usr/bin/env python
-# This file is part of Plasm.
+# Copyright 2018 Valentin Heidelberger
 #
-# Plasm is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+# http://www.apache.org/licenses/LICENSE-2.0
 #
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
-from plasm import genKeys
+from plasm import gen_keys
 from plasm import encrypt
 from plasm import decrypt
 import hashlib
@@ -22,44 +21,45 @@ import os
 
 from shutil import copytree
 
-def test_dir_encrypted_decrypted(tmpdir, privateKeyName, publicKeyName, password, sampleFile, sampleFileBW, inputDir, inputFileHash, inputFileBWHash):
-    privateKeyLocation = str(tmpdir.join(privateKeyName))
-    publicKeyLocation = str(tmpdir.join(publicKeyName))
+def test_dir_encrypted_decrypted(tmpdir, private_key_name, public_key_name, password, sample_file, sample_file_bw, input_dir, input_file_hash, input_file_bw_hash):
+#set key locations, temp paths and copy img files
+    private_key_location = str(tmpdir.join(private_key_name))
+    public_key_location = str(tmpdir.join(public_key_name))
 
-    tempDir = str(tmpdir.join('imgs'))
+    temp_dir = str(tmpdir.join('imgs'))
 
-    copytree(inputDir, tempDir)
+    copytree(input_dir, temp_dir)
 
-    genKeys.generateKeyPair(privateKeyLocation, publicKeyLocation, password)
+    input_temp_file = os.path.join(temp_dir, sample_file)
+    input_temp_file_bw = os.path.join(temp_dir, sample_file_bw)
+    encrypted_temp_file_foo = input_temp_file + '.foobar'
+    encrypted_temp_file_bw_foo = input_temp_file_bw + '.foobar'
+    encrypted_femp_file = input_temp_file + '.crypt'
+    encrypted_femp_file_bw = input_temp_file_bw + '.crypt'
 
-    inputTempFile = os.path.join(tempDir, sampleFile)
-    inputTempFileBW = os.path.join(tempDir, sampleFileBW)
+#generate keys
+    gen_keys.generate_key_pair(private_key_location, public_key_location, password)
 
-    with open(inputTempFile, 'rb') as in_file:
-        inputTempFileHash = hashlib.sha256(in_file.read()).hexdigest()
+#encrypt files with .foobar
+    encrypt.encrypt_files_in_dir(temp_dir, public_key_location, outfile_extension=".foobar", remove_input_file=False)
 
-    with open(inputTempFileBW, 'rb') as in_file:
-        inputTempFileBWHash = hashlib.sha256(in_file.read()).hexdigest()
+    assert os.path.isfile(encrypted_temp_file_foo)
+    assert os.path.isfile(encrypted_temp_file_bw_foo)
 
-    encrypt.encryptFilesInDir(tempDir, publicKeyLocation)
+#encrypt files with .crypt
+    encrypt.encrypt_files_in_dir(temp_dir, public_key_location, remove_input_file=True)
 
-    encryptedTempFile = inputTempFile + '.crypt'
-    encryptedTempFileBW = inputTempFileBW + '.crypt'
+    assert os.path.isfile(encrypted_femp_file)
+    assert os.path.isfile(encrypted_femp_file_bw)
 
-    assert os.path.isfile(encryptedTempFile)
-    assert os.path.isfile(encryptedTempFileBW)
+#decrypt files with .crypt
+    decrypt.decrypt_files_in_dir(temp_dir, private_key_location, password)
 
-    os.remove(inputTempFile)
-    os.remove(inputTempFileBW)
-    assert not os.path.isfile(inputTempFile)
-    assert not os.path.isfile(inputTempFileBW)
+#compare decrypted files hashes
+    with open(input_temp_file, 'rb') as in_file:
+        decrypted_temp_file_hash = hashlib.sha256(in_file.read()).hexdigest()
+    with open(input_temp_file_bw, 'rb') as in_file:
+        decrypted_temp_file_bw_hash = hashlib.sha256(in_file.read()).hexdigest()
 
-    decrypt.decryptFilesInDir(tempDir, privateKeyLocation, password)
-
-    with open(inputTempFile, 'rb') as in_file:
-        decryptedTempFileHash = hashlib.sha256(in_file.read()).hexdigest()
-    with open(inputTempFileBW, 'rb') as in_file:
-        decryptedTempFileBWHash = hashlib.sha256(in_file.read()).hexdigest()
-
-    assert decryptedTempFileHash == inputFileHash
-    assert decryptedTempFileBWHash == inputFileBWHash
+    assert decrypted_temp_file_hash == input_file_hash
+    assert decrypted_temp_file_bw_hash == input_file_bw_hash

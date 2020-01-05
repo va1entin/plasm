@@ -1,73 +1,70 @@
 #!/usr/bin/env python
-# This file is part of Plasm.
+# Copyright 2018 Valentin Heidelberger
 #
-# Plasm is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+# http://www.apache.org/licenses/LICENSE-2.0
 #
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
-from plasm import genKeys
+from plasm import gen_keys
 from plasm import encrypt
 from plasm import decrypt
 import hashlib
 import os
-
 from shutil import copy
 
-def test_file_encrypted_decrypted(tmpdir, privateKeyName, publicKeyName, password, sampleFile, inputFile, inputFileHash):
-    privateKeyLocation = str(tmpdir.join(privateKeyName))
-    publicKeyLocation = str(tmpdir.join(publicKeyName))
+def test_file_encrypted_decrypted(tmpdir, custom_outfile_extension, input_file, input_file_hash, private_key_name, public_key_name, password, sample_file):
+    private_key_location = str(tmpdir.join(private_key_name))
+    public_key_location = str(tmpdir.join(public_key_name))
 
-    copy(inputFile, str(tmpdir))
-    inputTempFile = str(tmpdir.join(sampleFile))
-    customOutfileExtension = '.foobar'
-    customEncryptedTempFile = str(tmpdir.join(sampleFile + customOutfileExtension))
-    encryptedTempFile = str(tmpdir.join(sampleFile + '.crypt'))
+    copy(input_file, str(tmpdir))
+    input_temp_file = str(tmpdir.join(sample_file))
+    custom_encrypted_temp_file = str(tmpdir.join(sample_file + custom_outfile_extension))
+    encrypted_temp_file = str(tmpdir.join(sample_file + '.crypt'))
 
-    with open(inputTempFile, 'rb') as in_file:
-        inputTempFileHash = hashlib.sha256(in_file.read()).hexdigest()
+    with open(input_temp_file, 'rb') as in_file:
+        input_temp_file_hash = hashlib.sha256(in_file.read()).hexdigest()
 
-    genKeys.generateKeyPair(privateKeyLocation, publicKeyLocation, password)
+    gen_keys.generate_key_pair(private_key_location, public_key_location, password)
 
 #just encrypt file
-    encrypt.encrypt(inputTempFile, publicKeyLocation)
+    encrypt.encrypt_file(input_temp_file, public_key_location)
 
-    assert os.path.isfile(inputTempFile)
-    os.remove(encryptedTempFile)
+    assert os.path.isfile(input_temp_file)
+    os.remove(encrypted_temp_file)
 
 #custom outfile
-    encrypt.encrypt(inputTempFile, publicKeyLocation, outfileExtension=customOutfileExtension)
+    encrypt.encrypt_file(input_temp_file, public_key_location, outfile_extension=custom_outfile_extension)
 
-    with open(customEncryptedTempFile, 'rb') as in_file:
-        customEncryptedTempFileHash = hashlib.sha256(in_file.read()).hexdigest()
+    with open(custom_encrypted_temp_file, 'rb') as in_file:
+        custom_encrypted_temp_file_hash = hashlib.sha256(in_file.read()).hexdigest()
 
-    assert customEncryptedTempFileHash != inputFileHash
-    assert os.path.isfile(inputTempFile)
-    os.remove(customEncryptedTempFile)
+    assert custom_encrypted_temp_file_hash != input_file_hash
+    assert os.path.isfile(input_temp_file)
+    os.remove(custom_encrypted_temp_file)
 
 #encrypt and remove input file
-    encrypt.encrypt(inputTempFile, publicKeyLocation, removeInputFile=True)
+    encrypt.encrypt_file(input_temp_file, public_key_location, remove_input_file=True)
 
-    assert not os.path.isfile(inputTempFile)
+    assert not os.path.isfile(input_temp_file)
 
-    with open(encryptedTempFile, 'rb') as in_file:
-        encryptedTempFileHash = hashlib.sha256(in_file.read()).hexdigest()
+    with open(encrypted_temp_file, 'rb') as in_file:
+        encrypted_temp_file_hash = hashlib.sha256(in_file.read()).hexdigest()
 
-    assert inputTempFileHash == inputFileHash
-    assert encryptedTempFile != inputFileHash
+    assert input_temp_file_hash == input_file_hash
+    assert encrypted_temp_file != input_file_hash
 
 #decrypt file
-    decrypt.decryptFile(encryptedTempFile, privateKeyLocation, password)
+    decrypt.decrypt_file(encrypted_temp_file, private_key_location, password)
 
-    with open(inputTempFile, 'rb') as in_file:
-        decryptedTempFileHash = hashlib.sha256(in_file.read()).hexdigest()
+    with open(input_temp_file, 'rb') as in_file:
+        decrypted_temp_file_hash = hashlib.sha256(in_file.read()).hexdigest()
 
-    assert decryptedTempFileHash == inputFileHash
+    assert decrypted_temp_file_hash == input_file_hash
