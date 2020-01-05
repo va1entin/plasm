@@ -14,12 +14,11 @@
 # limitations under the License.
 
 from nacl import encoding, public, pwhash, secret
+from plasm import common
 
 import logging
 import os
 import re
-
-usedEncoder = encoding.RawEncoder
 
 kdf = pwhash.argon2id.kdf
 ops = pwhash.argon2id.OPSLIMIT_SENSITIVE
@@ -27,48 +26,46 @@ ops = pwhash.argon2id.OPSLIMIT_SENSITIVE
 #logging.basicConfig(filename='/var/log/plasm.log',level=logging.INFO)
 
 
-def decryptKey(privateKey, password):
-    with open(privateKey, 'rb') as in_file:
+def decrypt_key(private_key, password):
+    with open(private_key, 'rb') as in_file:
         salt = in_file.read(16)
         in_file.seek(16)
         encrypted = in_file.read(72)
         in_file.seek(88)
         mem = int(in_file.read())
 
+    password = common.ensure_is_bytes(password)
     key = kdf(secret.SecretBox.KEY_SIZE, password, salt, opslimit=ops, memlimit=mem)
     box = secret.SecretBox(key)
-    loadedPrivateKey = box.decrypt(encrypted)
-    loadedPrivateKey = public.PrivateKey(loadedPrivateKey, encoder=usedEncoder)
+    loaded_private_key = box.decrypt(encrypted)
+    loaded_private_key = public.PrivateKey(loaded_private_key, encoder=common.used_encoder)
 
-    return loadedPrivateKey
+    return loaded_private_key
 
-def decryptFilesInDir(directory, privateKeyLocation, password, infileExtension=".crypt"):
-    loadedPrivateKey = decryptKey(privateKeyLocation, password)
+def decrypt_files_in_dir(directory, private_key_location, password, infile_extension=common.file_extension):
+    loaded_private_key = decrypt_key(private_key_location, password)
 
     for file in os.listdir(directory):
-        if file.endswith(infileExtension):
+        if file.endswith(infile_extension):
             try:
                 file = os.path.join(os.path.abspath(directory), file)
-                decryptFile(file, privateKeyLocation, password, infileExtension, loadedPrivateKey)
+                decrypt_file(file, private_key_location, password, infile_extension, loaded_private_key)
             except:
-                logging.critical("Failed to decrypt {0}".format(file))
+                logging.critical(f"Failed to decrypt {file}")
 
-def decryptFile(file, privateKeyLocation, password, infileExtension=".crypt", loadedPrivateKey=None):
-    if not loadedPrivateKey:
-        loadedPrivateKey = decryptKey(privateKeyLocation, password)
+def decrypt_file(file, private_key_location, password, infile_extension=common.file_extension, loaded_private_key=None):
+    if not loaded_private_key:
+        loaded_private_key = decrypt_key(private_key_location, password)
 
-    if file.endswith(infileExtension):
+    if file.endswith(infile_extension):
         file = os.path.abspath(file)
-        infileExtensionRegex = infileExtension + '$'
-        outfile = re.sub(infileExtensionRegex, '', file)
+        infile_extension_regex = infile_extension + '$'
+        outfile = re.sub(infile_extension_regex, '', file)
 
-        with open(file, 'rb') as in_file:
-            data = in_file.read()
+        data = common.read_file(file)
 
-        box = public.SealedBox(loadedPrivateKey)
+        box = public.SealedBox(loaded_private_key)
         decrypted = box.decrypt(data)
 
-        with open(outfile, 'wb') as out_file:
-            out_file.write(decrypted)
-
-        logging.info("Decrypted {0} to {1}".format(file, outfile))
+        common.write_file(outfile, decrypted)
+        logging.info(f"Decrypted {file} to {outfile}")

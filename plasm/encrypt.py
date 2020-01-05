@@ -14,53 +14,41 @@
 # limitations under the License.
 
 from nacl import encoding, public
+from plasm import common
 
 import logging
 import os
 
-usedEncoder = encoding.RawEncoder
-
 #logging.basicConfig(filename='/var/log/plasm.log',level=logging.INFO)
 
 
-def readPublicKey(publicKeyLocation):
-    with open(publicKeyLocation, 'rb') as key_file:
-            publicKey = key_file.read()
-    return public.PublicKey(publicKey, encoder=usedEncoder)
+def read_public_key(public_key_location):
+    public_key = common.read_file(public_key_location)
+    return public.PublicKey(public_key, encoder=common.used_encoder)
 
-def readFile(infile, outfileExtension):
-    outfile = infile + outfileExtension
-    with open(infile, 'rb') as in_file:
-        data = in_file.read()
-    return data, outfile
-
-def writeFile(outfile, data):
-    with open(outfile, 'wb') as out_file:
-        out_file.write(data)
-    return outfile
-
-def sealedBox(publicKey, data):
-    box = public.SealedBox(publicKey)
+def sealed_box(public_key, data):
+    box = public.SealedBox(public_key)
     return box.encrypt(data)
 
-def removeFile(inputFile):
-    logging.debug('Deleting source file {0}'.format(inputFile))
-    os.remove(inputFile)
+def remove_file(input_file):
+    logging.info(f'Deleting source file {input_file}')
+    os.remove(input_file)
 
-def encryptFile(inputFile, publicKeyLocation='/etc/plasm/public.key', outfileExtension=".crypt", removeInputFile=False):
-    data, outfile = readFile(inputFile, outfileExtension)
-    publicKey = readPublicKey(publicKeyLocation)
-    encrypted = sealedBox(publicKey, data)
-    outfile = writeFile(outfile, encrypted)
-    logging.debug('Successfully encrypted {0} to {1}'.format(inputFile, outfile))
-    if removeInputFile:
-        removeFile(inputFile)
+def encrypt_file(input_file, public_key_location='/etc/plasm/public.key', outfile_extension=common.file_extension, remove_input_file=common.remove_input_file):
+    outfile = input_file + outfile_extension
+    data = common.read_file(input_file)
+    public_key = read_public_key(public_key_location)
+    encrypted = sealed_box(public_key, data)
+    outfile = common.write_file(outfile, encrypted)
+    logging.info(f'Successfully encrypted {input_file} to {outfile}')
+    if remove_input_file:
+        remove_file(input_file)
     return outfile
 
-def encryptFilesInDir(directory, publicKeyLocation, outfileExtension=".crypt", removeInputFile=False):
+def encrypt_files_in_dir(directory, public_key_location, outfile_extension=common.file_extension, remove_input_file=common.remove_input_file):
     for file in os.listdir(directory):
         try:
-            filePath = os.path.join(directory, file)
-            encryptFile(filePath, publicKeyLocation, outfileExtension=outfileExtension, removeInputFile=removeInputFile)
+            file_path = os.path.join(directory, file)
+            encrypt_file(file_path, public_key_location, outfile_extension=outfile_extension, remove_input_file=remove_input_file)
         except:
-            logging.critical("Failed to encrypt {0}".format(file))
+            logging.critical(f"Failed to encrypt {file}")
