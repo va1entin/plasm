@@ -5,14 +5,14 @@
  import urllib2
  import pycurl
 +from plasm import encrypt
- 
+
  import settings
  import utils
 @@ -1100,6 +1101,7 @@
          return logging.error('service "%s" not initialized for camera with id %s' % (service_name, camera_id))
- 
+
      try:
-+        filename = encrypt.encryptFile(filename, '/etc/plasm/public.key')
++        filename = encrypt.encrypt_file(filename, '/etc/plasm/public.key', remove_input_file=True)
          service.upload_file(target_dir, filename, camera_name)
- 
+
      except Exception as e:
