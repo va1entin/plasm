@@ -12,44 +12,44 @@ If you are willing to dive deeper or want to customize more than what plasm allo
 If you specify a memlimit exceeding the free RAM your device can offer, creating the key will fail. If your encrypting device (e.g. a Raspberry Pi with ~500 megabytes of RAM) can't offer the default, I suggest creating the keys on a device that does and transferring them to the other device instead of weakening the encryption of your private key by creating it with a lower memlimit.
 
 ```python
-from plasm import genKeys
+from plasm import gen_keys
 
-genKeys.generateKeyPair(privateKeyLocation, publicKeyLocation, password, memlimit=1073741824)
+gen_keys.generate_key_pair(private_key_location, public_key_location, password, memlimit=1073741824)
 ```
 
 ### Encrypting a file
-* removeInputFile is optional and False by default.
+* remove_input_file is optional and False by default.
 
 ```python
 from plasm import encrypt
 
-encrypt.encryptFile(myFile, publicKeyLocation, removeInputFile=True)
+encrypt.encrypt_file(my_file, public_key_location, remove_input_file=True)
 ```
 
 ### Encrypting all files in a directory:
-* outfileExtension is optional and set to ".crypt" by default
-* removeInputFile is optional and False by default.
+* outfile_extension is optional and set to ".crypt" by default
+* remove_input_file is optional and False by default.
 
 ```python
 from plasm import encrypt
 
-encrypt.encryptFilesInDir(directory, publicKeyLocation, outfileExtension=".crypt", removeInputFile=False):
+encrypt.encrypt_files_in_dir(directory, public_key_location, outfile_extension=".crypt", remove_input_file=False):
 ```
 
 ### Decrypting a file:
 ```python
 from plasm import decrypt
 
-decrypt.decryptFile(encryptedFile, privateKeyLocation, password)
+decrypt.decrypt_file(encrypted_file, private_key_location, password)
 ```
 
 ### Decrypting all files with a certain extension in a directory:
-* infileExtension is optional and set to ".crypt" by default
+* infile_extension is optional and set to ".crypt" by default
 
 ```python
 from plasm import decrypt
 
-decrypt.decryptFilesInDir(directory, privateKeyLocation, password, infileExtension=".crypt"):
+decrypt.decrypt_files_in_dir(directory, private_key_location, password, infile_extension=".crypt"):
 ```
 
 ## Testing
